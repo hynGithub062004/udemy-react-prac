@@ -1,15 +1,36 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import { postCreateUser } from "../services/UserService";
 
 const ModalAddNew = (props) => {
-  const { show, handleClose } = props;
+  const { show, handleClose, handleUpdateUser } = props;
 
   const [name, setName] = useState("");
   const [job, setJob] = useState("");
 
-  const handleSaveUser = () => {
-    console.log({ name, job });
+  const handleSaveUser = async () => {
+    let res = await postCreateUser(name, job);
+
+    console.log(res);
+    if (res && res.id && res.name != "" && res.job != "") {
+      //success
+      handleClose();
+      setName("");
+      setJob("");
+      toast.success("A user is created is success");
+      handleUpdateUser({
+        first_name: name,
+        id: res.id,
+        email: `${name}@reqres.in`,
+      });
+    } else {
+      handleClose();
+      toast.error("Nhập đầy đủ dữ liệu.....");
+      setName("");
+      setJob("");
+    }
   };
   return (
     <>
