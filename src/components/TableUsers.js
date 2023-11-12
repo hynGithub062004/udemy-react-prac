@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import _ from "lodash";
 
 import ModalAddNew from "./ModalAddNew";
+import ModalEditUser from "./ModalEditUser";
 import Table from "react-bootstrap/Table";
 import { fetchAllUser } from "../services/UserService";
 import ReactPaginate from "react-paginate";
@@ -9,13 +11,15 @@ function TableUsers(props) {
   const [listUsers, setListUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-
+  const [dataUser, setDataUser] = useState({});
   const [isShowMoadalAddNew, setIsShowMoadalAddNew] = useState(false);
+  const [isShowEditModal, setIsShowEiditModal] = useState(false);
   const handleClose = () => {
     setIsShowMoadalAddNew(false);
+    setIsShowEiditModal(false);
   };
 
-  const handleUpdateUser = (user) => {
+  const handleUpdateTable = (user) => {
     setListUsers([user, ...listUsers]);
   };
 
@@ -35,6 +39,21 @@ function TableUsers(props) {
   const handlePageClick = (event) => {
     console.log(event);
     getUser(+event.selected + 1);
+  };
+
+  const handleEditUser = (user) => {
+    setIsShowEiditModal(true);
+    setDataUser(user);
+  };
+
+  const handleUpdateEditTable = (user) => {
+    console.log(user);
+
+    let id = listUsers.findIndex((item) => item.id === user.id);
+
+    let cloneListUsers = _.cloneDeep(listUsers);
+    cloneListUsers[id].first_name = user.first_name;
+    setListUsers(cloneListUsers);
   };
   return (
     <>
@@ -58,6 +77,7 @@ function TableUsers(props) {
             <th>Email</th>
             <th>First Name</th>
             <th>Last Name</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -69,6 +89,15 @@ function TableUsers(props) {
                 <td>{user.email}</td>
                 <td>{user.first_name}</td>
                 <td>{user.last_name}</td>
+                <td>
+                  <button
+                    className="btn btn-warning mx-3"
+                    onClick={() => handleEditUser(user)}
+                  >
+                    Edit
+                  </button>
+                  <button className="btn btn-danger">Delete</button>
+                </td>
               </tr>
             ))}
         </tbody>
@@ -94,7 +123,13 @@ function TableUsers(props) {
       <ModalAddNew
         show={isShowMoadalAddNew}
         handleClose={handleClose}
-        handleUpdateUser={handleUpdateUser}
+        handleUpdateTable={handleUpdateTable}
+      />
+      <ModalEditUser
+        show={isShowEditModal}
+        handleClose={handleClose}
+        dataUser={dataUser}
+        handleUpdateEditTable={handleUpdateEditTable}
       />
     </>
   );
