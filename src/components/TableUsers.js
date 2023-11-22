@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import _, { debounce } from "lodash";
+import { CSVLink, CSVDownload } from "react-csv";
+import ReactPaginate from "react-paginate";
+import Papa from "papaparse";
+import { toast } from "react-toastify";
 
 import ModalAddNew from "./ModalAddNew";
 import ModalEditUser from "./ModalEditUser";
 import ModalConfirm from "./ModalComfirm";
 import Table from "react-bootstrap/Table";
 import { fetchAllUser } from "../services/UserService";
-import ReactPaginate from "react-paginate";
 import "./TableUser.scss";
 function TableUsers(props) {
   const [listUsers, setListUsers] = useState([]);
@@ -47,7 +50,6 @@ function TableUsers(props) {
     }
   };
   const handlePageClick = (event) => {
-    console.log(event);
     getUser(+event.selected + 1);
   };
 
@@ -109,20 +111,79 @@ function TableUsers(props) {
     }
   }, 500);
 
+  const headers = [
+    { label: "Id", key: "id" },
+    { label: "First Name", key: "first_name" },
+    { label: "Email", key: "email" },
+    { label: "Last Name", key: "last_name" },
+  ];
+
+  const handleimportCsv = (event) => {
+    if (event.target && event.target.files && event.target.files[0]) {
+      let file = event.target.files[0];
+
+      if (file.type !== "text/csv") {
+        toast.error("Only accept file CSV.....");
+        return;
+      }
+      Papa.parse(file, {
+        complete: function (results) {
+          console.log("Finished:", results.data);
+          let dataCSV = results.data;
+          if (dataCSV.length > 0) {
+            if (dataCSV[0] && dataCSV[0].length === 3) {
+              if (
+                dataCSV[0][0] !== "first_name" ||
+                dataCSV[0][1] !== "last_name" ||
+                dataCSV[0][2] !== "email"
+              ) {
+                toast.error("Wrong format CSV file!");
+              } else {
+              }
+            } else {
+              toast.error("Wrong format CSV file!");
+            }
+          } else {
+            toast.error("Not found data from CSV");
+          }
+        },
+      });
+    }
+  };
+
   return (
     <>
       <div className="my-3 d-flex justify-content-between">
         <h3>
           <b>List users:</b>
         </h3>
-        <button
-          className="btn btn-success"
-          onClick={() => {
-            setIsShowMoadalAddNew(true);
-          }}
-        >
-          Add new user
-        </button>
+        <div className="group-btns">
+          <label className="btn btn-warning" htmlFor="test">
+            <i className="fa-solid fa-file-import"></i> Import
+          </label>
+          <input
+            id="test"
+            type="file"
+            hidden
+            onChange={(event) => handleimportCsv(event)}
+          />
+          <CSVLink
+            data={listUsers}
+            // headers={headers}
+            filename={"fileusers.csv"}
+            className="btn btn-primary"
+          >
+            <i className="fa-solid fa-file-export"></i> Export
+          </CSVLink>
+          <button
+            className="btn btn-success"
+            onClick={() => {
+              setIsShowMoadalAddNew(true);
+            }}
+          >
+            <i className="fa-solid fa-circle-plus"></i> Add new
+          </button>
+        </div>
       </div>
 
       <input

@@ -12,6 +12,74 @@ code {
     monospace;
 }
 
-// .app-container {
+.app-container {
 
-// }
+
+  .login-container {
+    margin: 40px auto;
+
+    .login-header {
+      font-weight: 700;
+    }
+
+    .title {
+      width: 100%;
+      display: flex;
+      justify-content:space-between;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    input {
+      padding: 10px ;
+      background-color: #f7f7f9 ;
+      border: none;
+      outline: none;
+      width: 100%;
+
+      &:hover {
+        background-color: #f2f1f2;
+      }
+    }
+
+    .btn-login {
+      padding: 10px;
+      background-color: #f7f7f9 ;
+      border: none;
+      cursor: pointer;
+      
+      &.active {
+        background-color: #f03e50;
+        color: #fff;
+    
+        &:hover {
+          opacity: 0.9;
+        }
+      }
+    }
+
+    button[disabled=disabled], button:disabled {
+      cursor: not-allowed;
+      background-color: rgb(229, 229, 229) !important;
+    }
+
+    .input-2 {
+      position: relative;
+
+      i {
+        position: absolute;
+        top: 50%;
+        right: 14px;
+        cursor: pointer;
+      }
+    }
+
+    .login-footer {
+      cursor: pointer;
+
+      i {
+        padding-right: 5px;
+      }
+    }
+  }
+}
